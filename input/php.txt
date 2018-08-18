@@ -1,0 +1,5 @@
+how to install php5 in a ubuntu vps
+my apache server is not runnning php code
+cant connect to mysql using php7
+crashes afer updating php from 5 to 7
+what should I do for improoving my apache php server security
