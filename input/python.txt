@@ -1,5 +1,0 @@
-how to print a string in python programming language
-how can I install a library for python
-cant install libraries using pip3 in python 2.7.3
-my py code suddenly stoped working
-best activation function for tensorflow in python

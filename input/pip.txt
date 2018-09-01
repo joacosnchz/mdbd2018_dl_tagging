@@ -1,5 +1,0 @@
-how to install pip in ubuntu server 16.04 lts
-should I use ports or homebrew for installing pip on a macbookpro
-how to update pip to the last version
-cant install libraries using pip3 in python
-best way to install pip on windows 10

@@ -1,5 +1,0 @@
-apache vs nginx on ubuntu
-why I cant enable a new apache site
-my apache server does not starts automatically after restart
-change ports that use apache
-configure a ssl connection with apache webserver
