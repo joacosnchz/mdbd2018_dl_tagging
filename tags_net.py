@@ -33,6 +33,8 @@ def train_neural_network(x):
     prediction = model.predict(x)
     cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
+
+    loss = open('./output/loss.txt', 'w')
     
     # feed forward + backpropagation = epoch
     hm_epochs = 13
@@ -60,15 +62,18 @@ def train_neural_network(x):
             epoch_loss = 0
             
             _, c = sess.run([optimizer, cost], feed_dict={x: train_x, y: train_y})
-            epoch_loss += c '''
+            epoch_loss += c 
+            '''
 
-
+            loss.write(str(epoch) + '\t' + str(epoch_loss) + '\n')
             saver.save(sess, './output/msgpackdata.ckpt')
             print('Epoch', epoch+1, 'completed out of', hm_epochs, 'loss:', epoch_loss)
 
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
         print('Accuracy:', accuracy.eval({x: test_x, y: test_y}))
+
+        loss.close()
 
 
 def use_neural_network(input_data):
@@ -92,9 +97,9 @@ def use_neural_network(input_data):
         print('Result', result[0])
 
 
-train_neural_network(x)
+#train_neural_network(x)
 
-'''
+
 print('Coffee')
 use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
 use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
@@ -102,5 +107,5 @@ use_neural_network('i want to understand how i can make a better cup of coffee s
 print('Vi')
 use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
 use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
-'''
+
 
