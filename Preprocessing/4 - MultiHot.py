@@ -36,6 +36,12 @@ def multiHot(Origin, Destination):
                 c+=1
         with open(Path(Destination)/folders[f]/"OneHot.msgpack", 'wb+') as outfile:
             msgpack.pack(r, outfile)
+        del p
+        del wD
+        del r
+        del c
+        del l
+        
 
     with open(Path(Destination)/"forumKeys.msgpack", 'wb+') as outfile:
         msgpack.pack(forumKeys, outfile)
