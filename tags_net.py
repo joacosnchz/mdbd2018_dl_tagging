@@ -16,36 +16,41 @@ from datetime import datetime
 
 model = TagsModel()
 
-FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
+BATCH_SIZE = 1000 # 
+HM_TRAININGS = 1 # how many trainings to run 
+HM_EPOCHS = 50 # how many epochs per training
 
 (train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
 
-batch_size = 10
 long_training = len(train_x[0]) # 86
 
 x = tf.placeholder('float', [None, long_training], name='x')
 y = tf.placeholder('float', name='y')
 
+# es necesario inicializar las variables antes del saver para que tenga algo que guardar
 l1, l2, l3, ol = model.initialize_variables(long_training)
 
 saver = tf.train.Saver()
 
-def train_neural_network(x):
+def train_neural_network(x, hm_epochs, batch_size):
     prediction = model.predict(x)
     cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
 
     loss = open('./output/loss.txt', 'w')
+    trainings = open('./output/trainig.txt', 'a')
     
     # feed forward + backpropagation = epoch
-    hm_epochs = 13
     start = datetime.now()
+    trainings.write(str(start) + '\t')
     print(start)
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         
         for epoch in range(hm_epochs):
             epoch_loss = 0
+            
             
             i = 0
             while i < len(train_x):
@@ -74,11 +79,16 @@ def train_neural_network(x):
 
         end = datetime.now()
         print(end)
+        trainings.write(str(end) + '\t')
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        print('Accuracy:', accuracy.eval({x: test_x, y: test_y}))
+        acc = accuracy.eval({x: test_x, y: test_y})
+        print('Accuracy:', acc)
+
+        trainings.write(str(acc) + '\n')
 
         loss.close()
+        trainings.close()
 
 
 def use_neural_network(input_data):
@@ -102,7 +112,15 @@ def use_neural_network(input_data):
         print('Result', result[0])
 
 
-train_neural_network(x)
+# todo: eliminar aca el archivo training.txt
+for i in range(0, HM_TRAININGS):
+    if i > 0:
+        x = tf.placeholder('float', [None, long_training], name='x')
+
+        l1, l2, l3, ol = model.initialize_variables(long_training)
+
+        saver = tf.train.Saver()
+    train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
 
 '''
 print('Coffee')
