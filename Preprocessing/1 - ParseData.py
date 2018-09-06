@@ -53,7 +53,7 @@ def parseData(Origin, Destination, size):
         # PARSING
         for i in range(size):
             # the attribute "Body" contains the body of the post, in html format. It needs to be parsed by parseBody()
-            r.append(parseBody(postsRoot[i].attrib["Body"]))
+            r.append([parseBody(postsRoot[i].attrib["Body"])])
             index += 1
             print(''.join((str(index),"/",str(size))))
 
