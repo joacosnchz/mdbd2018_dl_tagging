@@ -89,7 +89,7 @@ def parseBody(body):
             r += body[c]
         if body[c] == ">":
             b = True
-    newBody =  ''.join([r[i] for i in range(len(r)) if(r[i] not in '.,-()[]-_;:\'\"\\/<>{{}}*+=!"£$%^&*<>?’# ')]).replace('\n','').replace("  "," ").lower()
+    newBody =  ''.join([r[i] for i in range(len(r)) if(r[i] not in '.,-()[]-_;:\'\"\\/<>{{}}*+=!"£$%^&*<>?’#')]).replace('\n','').replace("  "," ").lower()
     result = []
     i = 0
     for c in range(len(newBody)):
@@ -113,4 +113,4 @@ def parseBody(body):
     result.append(a)
     return result
 
-parseData(Path("."),Path("."),5000)
+parseData(Path("."),Path("."),1400)
