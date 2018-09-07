@@ -1,11 +1,11 @@
 import tensorflow as tf
 
 class TagsModel:
-    def __init__(self):
+    def __init__(self, n_classes):
         self.n_nodes_hl1 = 500
         self.n_nodes_hl2 = 500
         self.n_nodes_hl3 = 500
-        self.n_classes = 17
+        self.n_classes = n_classes
 
     def initialize_variables(self, long_training):
         self.hidden_1_layer = {'weights':tf.Variable(tf.random_normal([long_training, self.n_nodes_hl1])),

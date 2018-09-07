@@ -14,13 +14,14 @@ import msgpack
 import tags_worddict
 from datetime import datetime
 
-model = TagsModel()
-
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
 BATCH_SIZE = 1000 # amount of posts to take by time
 HM_TRAININGS = 1 # how many trainings to run 
 HM_EPOCHS = 13 # how many epochs per training
 IS_TRAINING = True
+N_CLASSES = 17
+
+model = TagsModel(N_CLASSES)
 
 (train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
 
