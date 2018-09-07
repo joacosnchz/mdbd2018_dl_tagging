@@ -26,7 +26,7 @@ def read_data(file_path):
 	“How to make a ListView in Android Studio” => [1 0 1 0 0]
 	Limit the vocab size for the model to the top 1000 most commonly used words (Esto hay que cambiarlo)
 	'''
-
+	print('Reading data...')
 	folders = [f[2:] for f in[i[0] for i in os.walk(file_path  + '/input' )][1:]]
 
 	posts = []
@@ -38,15 +38,22 @@ def read_data(file_path):
 	random.shuffle(posts)
 
 	#80% of data for training and 20% for testing
-	train_size = int(len(posts) * .8)
-	train_posts = posts[:train_size]
-	test_posts = posts[train_size:]
+	train_size = int(len(posts) * .9)
+	#train_posts = posts[:train_size]
 
-	x_train = np.array(train_posts[:,0].tolist())
-	x_test = np.array(test_posts [:,0].tolist())
+	print('Splitting train data...')
+	x_train = np.array(posts[:train_size][:,0].tolist())
+	y_train = np.array(posts[:train_size][:,1].tolist())
 
-	y_train = np.array(train_posts[:,1].tolist())
-	y_test = np.array(test_posts [:,1].tolist())
+	#del train_posts
+
+	print('Splitting test data...')
+	#test_posts = posts[train_size:]
+	x_test = np.array(posts[train_size:][:,0].tolist())
+	y_test = np.array(posts[train_size:][:,1].tolist())
+
+	#del test_posts
+	del posts
 
 	return ((x_train,y_train),(x_test,y_test))
 

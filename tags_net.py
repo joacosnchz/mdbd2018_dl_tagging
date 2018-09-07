@@ -15,11 +15,11 @@ import tags_worddict
 from datetime import datetime
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
-BATCH_SIZE = 1000 # amount of posts to take by time
+BATCH_SIZE = 10 # amount of posts to take by time
 HM_TRAININGS = 1 # how many trainings to run 
 HM_EPOCHS = 13 # how many epochs per training
-IS_TRAINING = True
-N_CLASSES = 17
+IS_TRAINING = True # are we training or using the model?
+N_CLASSES = 15 # how many neurons in the output layer
 
 model = TagsModel(N_CLASSES)
 
@@ -84,7 +84,12 @@ def train_neural_network(x, hm_epochs, batch_size):
         trainings.write(str(end) + '\t')
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
-        acc = accuracy.eval({x: test_x, y: test_y})
+
+        # Splitting the accuracy calculation in order to save memory
+        test_size = int(len(test_x) * .5)
+        acc1 = accuracy.eval({x: test_x[:test_size], y: test_y[:test_size]})
+        acc2 = accuracy.eval({x: test_x[test_size:], y: test_y[test_size:]})
+        acc = (acc1+acc2)/2
         print('Accuracy:', acc)
 
         trainings.write(str(acc) + '\n')
