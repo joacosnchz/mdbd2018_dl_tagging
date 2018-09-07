@@ -17,9 +17,10 @@ from datetime import datetime
 model = TagsModel()
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
-BATCH_SIZE = 1000 # 
+BATCH_SIZE = 1000 # amount of posts to take by time
 HM_TRAININGS = 1 # how many trainings to run 
-HM_EPOCHS = 50 # how many epochs per training
+HM_EPOCHS = 13 # how many epochs per training
+IS_TRAINING = True
 
 (train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
 
@@ -74,7 +75,7 @@ def train_neural_network(x, hm_epochs, batch_size):
             '''
 
             loss.write(str(epoch) + '\t' + str(epoch_loss) + '\n')
-            saver.save(sess, './output/msgpackdata.ckpt')
+            saver.save(sess, './output/model_trains' + str(HM_TRAININGS) + '_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
             print('Epoch', epoch+1, 'completed out of', hm_epochs, 'loss:', epoch_loss)
 
         end = datetime.now()
@@ -104,31 +105,32 @@ def use_neural_network(input_data):
         
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        saver.restore(sess, "./output/msgpackdata.ckpt")
+        saver.restore(sess, './output/model_trains' + HM_TRAININGS + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
 
         features = tags_worddict.get_multihot(input_data)
         result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
         
         print('Result', result[0])
 
+if IS_TRAINING:
+    if os.path.exists('./output/trainig.txt'):
+        os.remove('./output/trainig.txt')
 
-# todo: eliminar aca el archivo training.txt
-for i in range(0, HM_TRAININGS):
-    if i > 0:
-        x = tf.placeholder('float', [None, long_training], name='x')
+    for i in range(0, HM_TRAININGS):
+        if i > 0:
+            x = tf.placeholder('float', [None, long_training], name='x')
 
-        l1, l2, l3, ol = model.initialize_variables(long_training)
+            l1, l2, l3, ol = model.initialize_variables(long_training)
 
-        saver = tf.train.Saver()
-    train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
+            saver = tf.train.Saver()
+        train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
+else:
+    print('Coffee')
+    use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
+    use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
 
-'''
-print('Coffee')
-use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
-use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
+    print('Vi')
+    use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
+    use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
 
-print('Vi')
-use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
-use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
-'''
 

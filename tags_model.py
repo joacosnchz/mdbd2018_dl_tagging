@@ -17,7 +17,7 @@ class TagsModel:
         self.hidden_3_layer = {'weights':tf.Variable(tf.random_normal([self.n_nodes_hl2, self.n_nodes_hl3])),
                           'biases':tf.Variable(tf.random_normal([self.n_nodes_hl3]))}
 
-        self.output_layer = {'weights':tf.Variable(tf.random_normal([self.n_nodes_hl3, self.n_classes])),
+        self.output_layer = {'weights':tf.Variable(tf.random_normal([self.n_nodes_hl1, self.n_classes])),
                         'biases':tf.Variable(tf.random_normal([self.n_classes]))}
 
         return self.hidden_1_layer, self.hidden_2_layer, self.hidden_3_layer, self.output_layer
@@ -29,7 +29,7 @@ class TagsModel:
 
         l3 = self.layer_3(l2)
 
-        output = tf.matmul(l3, self.output_layer['weights']) + self.output_layer['biases']
+        output = tf.matmul(l1, self.output_layer['weights']) + self.output_layer['biases']
 
         return output
 
