@@ -82,6 +82,8 @@ def train_neural_network(x, hm_epochs, batch_size):
         end = datetime.now()
         print(end)
         trainings.write(str(end) + '\t')
+        trainings.write(str(BATCH_SIZE) + '\t')
+        trainings.write(str(HM_EPOCHS) + '\t')
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
 
@@ -129,6 +131,7 @@ if IS_TRAINING:
             l1, l2, l3, ol = model.initialize_variables(long_training)
 
             saver = tf.train.Saver()
+
         train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
 else:
     print('Coffee')
