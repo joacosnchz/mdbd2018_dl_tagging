@@ -32,7 +32,10 @@ def multiHot(Origin, Destination):
             r = []
             for i in range(l):
                 print(''.join((str(c),'/',str(l))))
-                r.append([[1 if (j in p[i][0]) else 0 for j in wD], [1 if (f == k) else 0 for k in range(len(folders))]])
+                r.append([[],[1 if (f == k) else 0 for k in range(len(folders))]])
+                for j in range(len(wD)):
+                    if wD[j] in p[i][0]:
+                        r[i][0].append(j)
                 c+=1
         with open(Path(Destination)/folders[f]/"OneHot.msgpack", 'wb+') as outfile:
             msgpack.pack(r, outfile)
