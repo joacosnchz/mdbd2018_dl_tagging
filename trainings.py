@@ -5,5 +5,5 @@ batch_size = 10
 
 for i in range(0, hm_trainings):
 	# batch_size hm_epochs is_training n_classes
-	os.system('python3 tags_net.py ' + str(batch_size) + ' 100 1 2 ' + str(i))
+	os.system('python tags_net.py ' + str(batch_size) + ' 100 1 15 ' + str(i))
 	batch_size += 10
