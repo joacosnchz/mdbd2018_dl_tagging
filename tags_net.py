@@ -1,6 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+import sys
 import tensorflow as tf
 import numpy as np
 import nltk
@@ -15,11 +16,11 @@ import tags_worddict
 from datetime import datetime
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
-BATCH_SIZE = 10 # amount of posts to take by time
-HM_TRAININGS = 1 # how many trainings to run 
-HM_EPOCHS = 13 # how many epochs per training
-IS_TRAINING = True # are we training or using the model?
-N_CLASSES = 15 # how many neurons in the output layer
+BATCH_SIZE = int(sys.argv[1]) # amount of posts to take by time sys.argv
+HM_EPOCHS = int(sys.argv[2]) # how many epochs per training
+IS_TRAINING = bool(sys.argv[3]) # are we training or using the model?
+N_CLASSES = int(sys.argv[4]) # how many neurons in the output layer
+TRAINING_INDEX = int(sys.argv[5])
 
 model = TagsModel(N_CLASSES)
 
@@ -40,13 +41,13 @@ def train_neural_network(x, hm_epochs, batch_size):
     cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits=prediction, labels=y) )
     optimizer = tf.train.AdamOptimizer().minimize(cost)
 
-    loss = open('./output/loss.txt', 'w')
+    loss = open('./output/loss.txt', 'a')
     trainings = open('./output/trainig.txt', 'a')
     
     # feed forward + backpropagation = epoch
-    start = datetime.now()
-    trainings.write(str(start) + '\t')
-    print(start)
+    trainings.write(str(TRAINING_INDEX) + '\t')
+    initial_time = datetime.now()
+    print('Starting training...')
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         
@@ -75,15 +76,13 @@ def train_neural_network(x, hm_epochs, batch_size):
             epoch_loss += c 
             '''
 
-            loss.write(str(epoch) + '\t' + str(epoch_loss) + '\n')
-            saver.save(sess, './output/model_trains' + str(HM_TRAININGS) + '_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
+            loss.write(str(TRAINING_INDEX) + '\t' + str(HM_EPOCHS) + '\t' + str(epoch) + '\t' + str(BATCH_SIZE) + '\t' + str(epoch_loss) + '\n')
+            saver.save(sess, './output/model_trains' + '_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
             print('Epoch', epoch+1, 'completed out of', hm_epochs, 'loss:', epoch_loss)
 
         end = datetime.now()
-        print(end)
-        trainings.write(str(end) + '\t')
-        trainings.write(str(BATCH_SIZE) + '\t')
-        trainings.write(str(HM_EPOCHS) + '\t')
+        time_diff = end - initial_time
+        trainings.write(str(time_diff) + '\t')
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
 
@@ -91,7 +90,7 @@ def train_neural_network(x, hm_epochs, batch_size):
         test_size = int(len(test_x) * .5)
         acc1 = accuracy.eval({x: test_x[:test_size], y: test_y[:test_size]})
         acc2 = accuracy.eval({x: test_x[test_size:], y: test_y[test_size:]})
-        acc = (acc1+acc2)/2
+        acc = ((acc1*test_size) + (acc2*test_size))/ (2*test_size)
         print('Accuracy:', acc)
 
         trainings.write(str(acc) + '\n')
@@ -113,7 +112,7 @@ def use_neural_network(input_data):
         
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        saver.restore(sess, './output/model_trains' + HM_TRAININGS + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
+        saver.restore(sess, './output/model_trains' + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
 
         features = tags_worddict.get_multihot(input_data)
         result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
@@ -121,18 +120,7 @@ def use_neural_network(input_data):
         print('Result', result[0])
 
 if IS_TRAINING:
-    if os.path.exists('./output/trainig.txt'):
-        os.remove('./output/trainig.txt')
-
-    for i in range(0, HM_TRAININGS):
-        if i > 0:
-            x = tf.placeholder('float', [None, long_training], name='x')
-
-            l1, l2, l3, ol = model.initialize_variables(long_training)
-
-            saver = tf.train.Saver()
-
-        train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
+    train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
 else:
     print('Coffee')
     use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')

@@ -31,7 +31,7 @@ def read_data(file_path):
 
 	posts = []
 	for f in folders:
-		with open(f + '/OneHot.msgpack', 'rb') as input:
+		with open('/U' + f + '/OneHot.msgpack', 'rb') as input:
 			posts +=  (msgpack.unpack(input))
 
 	posts = np.array(posts)
