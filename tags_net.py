@@ -83,6 +83,7 @@ def train_neural_network(x, hm_epochs, batch_size):
         end = datetime.now()
         time_diff = end - initial_time
         trainings.write(str(time_diff) + '\t')
+        
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
 
