@@ -26,7 +26,7 @@ def multiHot(Origin, Destination):
     for f in range(len(folders)):
         print(''.join(("Creating MultiHot of folder "+str(f)+" out of ",str(len(folders))+": ",folders[f])))
         forumKeys.append([f,folders[f],[1 if (f == k) else 0 for k in range(len(folders))]])
-        with open(Path(folders[f]) / "Posts.msgpack", "rb") as posts, open(Path(Origin)/"WordDict.msgpack","rb") as w:
+        with open(Path(folders[f]) / "Posts.msgpack", "rb") as posts, open(Path(Origin)/"wordDict.msgpack","rb") as w:
             p,wD = msgpack.unpack(posts),msgpack.unpack(w)
             c,l = 0,len(p)
             r = []
