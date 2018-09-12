@@ -27,7 +27,7 @@ filterData takes the following arguments:
 def filterData(Origin,Destination,lowerThreshold,upperThreshold):
     print("Filtering results...")
 
-    with open(Path(Origin)/"WordCount.msgpack", "rb") as wordCount, open(Path(Origin)/"WordDict.msgpack","rb") as wordDict:
+    with open(Path(Origin)/"wordCount.msgpack", "rb") as wordCount, open(Path(Origin)/"wordDict.msgpack","rb") as wordDict:
         wC, wD = msgpack.unpack(wordCount),msgpack.unpack(wordDict)
         wordsToDelete = []
         length = len(wC)
