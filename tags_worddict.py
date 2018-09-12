@@ -17,6 +17,6 @@ def get_multihot(a):
 	wD = msgpack.unpack(open("./input/WordDict.msgpack","rb"))
 	
 	r = [1 if(wD[j] in r) else 0 for j in range(len(wD))]
-	return r
+	return (r,len(wD))
 
 
