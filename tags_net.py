@@ -115,7 +115,8 @@ def use_neural_network(input_data):
         sess.run(tf.global_variables_initializer())
         saver.restore(sess, './output/model_trains' + HM_TRAININGS + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
 
-        features = tags_worddict.get_multihot(input_data)
+        features, length = tags_worddict.get_multihot(input_data)
+        features = [[1 if (i in f) else 0 for i in range(length)] for f in features]
         result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
         
         print('Result', result[0])
