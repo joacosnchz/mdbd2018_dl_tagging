@@ -22,7 +22,7 @@ def merge(Origin, Destination):
     newWordCount = []
     for f in range(len(folders)):
         print(''.join(("Merging folder "+str(f)+" out of ",str(len(folders))+": ",folders[f])))
-        with open(Path(Origin)/folders[f]/"WordDict.msgpack","rb") as worddict, open(Path(Origin)/folders[f]/"WordCount.msgpack","rb") as wordcount:
+        with open(Path(Origin)/folders[f]/"wordDict.msgpack","rb") as worddict, open(Path(Origin)/folders[f]/"wordCount.msgpack","rb") as wordcount:
             wd = msgpack.unpack(worddict)
             wc = msgpack.unpack(wordcount)
             for i in range(len(wd)):
