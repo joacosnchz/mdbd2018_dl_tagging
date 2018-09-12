@@ -59,9 +59,9 @@ def parseData(Origin, Destination, size):
 
     # SAVING RESULTS
         print("Saving Results")
-        with open(Path(Destination)/folders[f]/("WordDict.msgpack"), 'wb+') as outfile:
+        with open(Path(Destination)/folders[f]/("wordDict.msgpack"), 'wb+') as outfile:
             msgpack.pack(wordDict, outfile)
-        with open(Path(Destination)/folders[f]/("WordCount.msgpack"), 'wb+') as outfile:
+        with open(Path(Destination)/folders[f]/("wordCount.msgpack"), 'wb+') as outfile:
             msgpack.pack(wordCount, outfile)
         with open(Path(Destination)/folders[f]/"Posts.msgpack", 'wb+') as outfile:
             msgpack.pack(r, outfile)
