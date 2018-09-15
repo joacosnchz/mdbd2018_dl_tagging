@@ -32,7 +32,7 @@ x = tf.placeholder('float', [None, long_training], name='x')
 y = tf.placeholder('float', name='y')
 
 # es necesario inicializar las variables antes del saver para que tenga algo que guardar
-l1, l2, l3, ol = model.initialize_variables(long_training)
+l1, ol = model.initialize_variables(long_training)
 
 saver = tf.train.Saver()
 
