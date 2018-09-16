@@ -5,9 +5,12 @@ import msgpack
 import numpy as np
 import random
 
+import tensorflow as tf
 from tensorflow.python.client import device_lib
 
 import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
 
 def safe_mkdir(path):
     """ Create a directory if there isn't one already. """
@@ -24,13 +27,15 @@ def read_data(file_path):
 	
 	Vocab = [‘listview’, ‘strftime’, ‘studio’, ‘isnan’, ‘script’]
 	“How to make a ListView in Android Studio” => [1 0 1 0 0]
-	Limit the vocab size for the model to the top 1000 most commonly used words (Esto hay que cambiarlo)
+	
 	'''
 	print('Reading data...')
 	folders = [f[2:] for f in[i[0] for i in os.walk(file_path  + '/input' )][1:]]
-
 	posts = []
+	indexes = []
+
 	for f in folders:
+		indexes.append(f.split('.')[0].title()) #Take forum's name
 		with open(f + '/OneHot.msgpack', 'rb') as input:
 			posts +=  (msgpack.unpack(input))
 
@@ -38,7 +43,7 @@ def read_data(file_path):
 	random.shuffle(posts)
 
 	#80% of data for training and 20% for testing
-	train_size = int(len(posts) * .9)
+	train_size = int(len(posts) * .8)
 	#train_posts = posts[:train_size]
 
 	print('Splitting train data...')
@@ -55,29 +60,41 @@ def read_data(file_path):
 	#del test_posts
 	del posts
 
-	return ((x_train,y_train),(x_test,y_test))
+	return ((x_train,y_train),(x_test,y_test),indexes)
 
 
-
-def plot_history(histories, key='categorical_crossentropy'):
-	'''Plot history graph for loss and train per epoch.
-	   Analyse overfitting.
+def plot_confusion_matrix(df, save=False):
+	''' Recieves the dataframe and plots it.
 	'''
+	plt.figure(figsize=(8,6))
 
-	plt.figure(figsize=(8,5))
-    
-	for name, history in histories:
-		val = plt.plot(history.epoch, history.history['val_'+key],
-					'--', label=name.title()+' Val')
-		plt.plot(history.epoch, history.history[key], color=val[0].get_color(),
-					label=name.title()+' Train')
+	#generate heatmap axis and styles
+	ax = sns.heatmap(df, linewidths=.5)
+	plt.subplots_adjust(left=.20, bottom=.21,  top=.94)
+	ax.set_title("Confusion Matrix", fontsize='large')
+	ax.set_xticklabels(ax.get_xticklabels(),rotation=45,ha="right",rotation_mode='anchor')
 
-	plt.xlabel('Epochs')
-	plt.ylabel(key.replace('_',' ').title())
-	plt.legend()
-
-	plt.xlim([0,max(history.epoch)])
+	if save:
+		plt.savefig('./output/confusion_matrix.png')
 	plt.show()
 
 
-#print(device_lib.list_local_devices()[:,"name"])
+def use_neural_network(input_data):
+    prediction = model.predict(x)
+    lemmatizer = WordNetLemmatizer()
+
+    with open('./input/WordDict.msgpack', 'rb') as f:
+        lexicon_pre = msgpack.unpack(f)
+        lexicon = []
+        for word in lexicon_pre:
+            lexicon.append(word.decode())
+
+        
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        saver.restore(sess, './prueba/model_trains' + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
+
+        features = tags_worddict.get_multihot(input_data)
+        result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
+        
+        print('Result', result[0])
