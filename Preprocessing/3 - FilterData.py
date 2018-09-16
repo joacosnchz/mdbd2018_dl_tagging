@@ -31,10 +31,12 @@ def filterData(Origin,Destination,lowerThreshold,upperThreshold):
         wC, wD = msgpack.unpack(wordCount),msgpack.unpack(wordDict)
         wordsToDelete = []
         length = len(wC)
+
         for i in range(length):
             print(str(i)+"/"+str(length))
+
             # 28 is the length of the longest word in the english language
-            if (wC[i] < lowerThreshold or wC[i] > upperThreshold or len(wD[i]) > 28 or '\\' in str(wD[i])):
+            if (wC[i] < lowerThreshold or len(wD[i]) > 28 or '\\' in str(wD[i])):
                 wordsToDelete.append(i)
 
         print("Deleting filtered words")
@@ -42,11 +44,32 @@ def filterData(Origin,Destination,lowerThreshold,upperThreshold):
             del wD[i]
             del wC[i]
 
+        wordsToDelete = []
+        length = len(wC)
+
+        cantTotal = 0
+        for i in range(length):
+            cantTotal += wC[i]
+
+        for i in range(length):
+            print(str(i)+"/"+str(length))
+
+            frecuencia = wC[i]/cantTotal
+            if frecuencia >= 0.001:
+                wordsToDelete.append(i)
+
+        print("Deleting filtered words")
+        for i in wordsToDelete[::-1]:
+            del wD[i]
+            del wC[i] 
+
         with open(Path(Destination)/"wordCount.msgpack", 'wb+') as outfile:
             msgpack.pack(wC, outfile)
         with open(Path(Destination)/"wordDict.msgpack", 'wb+') as outfile:
-            msgpack.pack(wD, outfile)
+            msgpack.pack(wD, outfile) 
         with open(Path(Destination)/"deletedWords.msgpack", 'wb+') as outfile:
             msgpack.pack(wordsToDelete, outfile)
+
+    print('Words filtered')
 
 filterData('.','.',3,36176) # nr of posts * 0.14470588
