@@ -1,30 +1,16 @@
 from random import randint
 import utils
 import os
+import msgpack
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__))
 (train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
 
-print(train_y)
+forumKeys = msgpack.unpack(open('./input/forumKeys.msgpack', 'rb'))
 
-rand = randint(1, 15)
+for i in range(0, 5):
+	rand = randint(0, len(forumKeys)-1)
+	predicted = forumKeys[rand]
 
-classes = {
-	1: '3dPrinting', 
-	2: 'chess', 
-	3: 'esperanto', 
-	4: 'fitness', 
-	5: 'freelancing', 
-	6: 'health', 
-	7: 'law', 
-	8: 'pets', 
-	9: 'robotics', 
-	10: 'rpg', 
-	11: 'sports', 
-	12: 'startups', 
-	13: 'vi', 
-	14: 'windowsPhone',
-	15: 'woodWorking'
-}
-
-print(classes[rand])
+	if predicted[2] == train_y[i].tolist():
+		print('Match:' + forumKeys[rand][1].decode('ascii') + '\n')
