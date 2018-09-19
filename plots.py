@@ -3,9 +3,35 @@ import matplotlib.pyplot as plt
 import numpy as np
 import statistics
 
-def histogram(file, title=None):
-	wC = msgpack.unpack(open(file, 'rb'))
-	wD = msgpack.unpack(open('./input/wordDict_merged.msgpack', 'rb'))
+def boxplot(files, title=None):
+	nndata = []
+	randata = []
+
+	with open(files[0], 'r') as nn:
+		with open(files[1], 'r') as ran:
+			nnlines = nn.readlines()
+			ranlines = ran.readlines()
+
+			for line in nnlines:
+				splittedline = line.split('\t')
+				nndata.append(1 - float(splittedline[1].replace('\n', '')))
+
+			for line in ranlines:
+				splittedline = line.split('\t')
+				randata.append(1 - float(splittedline[1].replace('\n', '')))
+
+	data = [np.array(nndata), np.array(randata)]
+
+	plt.boxplot(data, labels=['Neural Network', 'Random'])
+	plt.ylabel('Error')
+	if title:
+		plt.title(title)
+	plt.show()
+
+
+def histogram(files, title=None):
+	wC = msgpack.unpack(open(files[0], 'rb'))
+	wD = msgpack.unpack(open(files[1], 'rb'))
 
 	toDelete = []
 	for i in range(0, len(wC)):
@@ -52,4 +78,5 @@ def xy_lineplot(file, title=None):
 #xy_lineplot('./input/training.txt', 'Epochs Quantity vs Model Accuracy')
 #xy_lineplot('./input/bs_time.txt', 'Batch Size vs Time (min)')
 #xy_lineplot('./input/100trainings.txt', 'Epochs vs Avg. Accuracy')
-histogram('./input/wordCount_merged.msgpack', 'Histogram of Word Ocurrences')
+#histogram(['./input/wordCount_merged.msgpack', './input/wordDict_merged.msgpack'], 'Histogram of Word Ocurrences')
+boxplot(['./input/100trainings.txt', './input/randomAccuracy.txt'], 'Neural Network vs Random Model')
