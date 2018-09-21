@@ -24,7 +24,7 @@ TRAINING_INDEX = int(sys.argv[5])
 
 model = TagsModel(N_CLASSES)
 
-(train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
+(train_x, train_y), (test_x, test_y), indexes = utils.read_data(FILE_PATH)
 
 long_training = len(train_x[0]) # 86
 
@@ -42,10 +42,10 @@ def train_neural_network(x, hm_epochs, batch_size):
     optimizer = tf.train.AdamOptimizer().minimize(cost)
 
     loss = open('./output/loss.txt', 'a')
-    trainings = open('./output/trainig.txt', 'a')
+    trainings = open('./output/training.txt', 'a')
     
     # feed forward + backpropagation = epoch
-    trainings.write(str(TRAINING_INDEX) + '\t')
+    
     initial_time = datetime.now()
     print('Starting training...')
     with tf.Session() as sess:
@@ -66,23 +66,14 @@ def train_neural_network(x, hm_epochs, batch_size):
                 _, c = sess.run([optimizer, cost], feed_dict={x: batch_x, y: batch_y})
                 epoch_loss += c
                 i += batch_size
-            
 
-            # Sin batches
-            '''
-            epoch_loss = 0
-            
-            _, c = sess.run([optimizer, cost], feed_dict={x: train_x, y: train_y})
-            epoch_loss += c 
-            '''
-
+            #Log the data from the epoch in console and file
             loss.write(str(TRAINING_INDEX) + '\t' + str(HM_EPOCHS) + '\t' + str(epoch) + '\t' + str(BATCH_SIZE) + '\t' + str(epoch_loss) + '\n')
             saver.save(sess, './output/model_trains' + '_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
             print('Epoch', epoch+1, 'completed out of', hm_epochs, 'loss:', epoch_loss)
 
         end = datetime.now()
         time_diff = end - initial_time
-        trainings.write(str(time_diff) + '\t')
         
         correct = tf.equal(tf.argmax(prediction, 1), tf.argmax(y, 1))
         accuracy = tf.reduce_mean(tf.cast(correct, 'float'))
@@ -94,41 +85,54 @@ def train_neural_network(x, hm_epochs, batch_size):
         acc = ((acc1*test_size) + (acc2*test_size))/ (2*test_size)
         print('Accuracy:', acc)
 
-        trainings.write(str(acc) + '\n')
-
+        #Log the build's accuracy
+        trainings.write(str(TRAINING_INDEX) + '\t'+ str(time_diff) + '\t' + str(acc) + '\n')
+       
         loss.close()
         trainings.close()
+        
 
 
-def use_neural_network(input_data):
+def feed_forward(test_x):
+    '''Takes vector representation of a text. Runs the model and returns the most accurate label or category.
+    '''
     prediction = model.predict(x)
-    lemmatizer = WordNetLemmatizer()
+    result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:test_x}),1)))
+    print("Data predicted saccessfully")
+    return (result)
 
-    with open('./input/WordDict.msgpack', 'rb') as f:
-        lexicon_pre = msgpack.unpack(f)
-        lexicon = []
-        for word in lexicon_pre:
-            lexicon.append(word.decode())
 
-        
-    with tf.Session() as sess:
-        sess.run(tf.global_variables_initializer())
-        saver.restore(sess, './output/model_trains' + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
+def generate_confusion_matrix(pred, test_y, plot=False):
+    '''Generates the confusion matrix of the tested data
+    '''
+    heatmap_data = tf.confusion_matrix(labels=test_y, predictions=pred)
 
-        features = tags_worddict.get_multihot(input_data)
-        result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
-        
-        print('Result', result[0])
+    sess = tf.Session()
+    with sess.as_default():
+        heatmap_matrix = sess.run(heatmap_data)
 
-if IS_TRAINING:
-    train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
-else:
-    print('Coffee')
-    use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
-    use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
+    df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
+    print("Heatmap generated saccessfully")
 
-    print('Vi')
-    use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
-    use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
+    #Plot the matrix using seaborn 
+    utils.plot_confusion_matrix(df, plot)
 
+
+
+
+if __name__ == '__main__':
+    if IS_TRAINING:
+        train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
+        pred = feed_forward(test_x)
+        generate_confusion_matrix(pred, test_y, True)
+
+
+    else:
+        print('Coffee')
+        utils.use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
+        utils.use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
+
+        print('Vi')
+        utils.use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
+        utils.use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
 
