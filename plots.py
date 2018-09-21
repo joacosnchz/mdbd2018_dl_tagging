@@ -33,7 +33,7 @@ def histogram(files, title=None):
 	wC = msgpack.unpack(open(files[0], 'rb'))
 	wD = msgpack.unpack(open(files[1], 'rb'))
 
-	toDelete = []
+	''' toDelete = []
 	for i in range(0, len(wC)):
 		if (wC[i] < 3 or len(wD[i]) > 28 or '\\' in str(wD[i])) or wC[i] > 4000:
 			toDelete.append(i)
@@ -45,9 +45,9 @@ def histogram(files, title=None):
 
 	mean = statistics.mean(wC)
 	sd = statistics.stdev(wC)
-	print(mean, sd)
+	print(mean, sd) '''
 
-	plt.hist(wC)
+	plt.hist(wC, bins=[0, 100, 200, 300, 400])
 	if title:
 		plt.title(title)
 	plt.ylabel('Frequency')
@@ -64,13 +64,13 @@ def xy_lineplot(file, title=None):
 			splittedline = lines[i].split('\t')
 
 			x.append(splittedline[0])
-			y.append(float(splittedline[1]))
+			y.append(float(splittedline[2]))
 
 	plt.plot(x, y)
 	if title:
 		plt.title(title)
 	plt.xlabel('Epochs')
-	plt.ylabel('Avg. Accuracy')
+	plt.ylabel('Accuracy')
 	#plt.xticks([0, 19, 39, 59, 79, 99])
 	plt.show()
 
@@ -78,5 +78,5 @@ def xy_lineplot(file, title=None):
 #xy_lineplot('./input/training.txt', 'Epochs Quantity vs Model Accuracy')
 #xy_lineplot('./input/bs_time.txt', 'Batch Size vs Time (min)')
 #xy_lineplot('./input/100trainings.txt', 'Epochs vs Avg. Accuracy')
-#histogram(['./input/wordCount_merged.msgpack', './input/wordDict_merged.msgpack'], 'Histogram of Word Ocurrences')
-boxplot(['./input/100trainings.txt', './input/randomAccuracy.txt'], 'Neural Network vs Random Model')
+histogram(['./input/wordCount_merged.msgpack', './input/wordDict_merged.msgpack'], 'Histogram of Word Ocurrences')
+#boxplot(['./input/100trainings.txt', './input/randomAccuracy.txt'], 'Neural Network vs Random Model')
