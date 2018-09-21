@@ -64,19 +64,19 @@ def xy_lineplot(file, title=None):
 			splittedline = lines[i].split('\t')
 
 			x.append(splittedline[0])
-			y.append(float(splittedline[2]))
+			y.append(float(splittedline[1]))
 
 	plt.plot(x, y)
 	if title:
 		plt.title(title)
-	plt.xlabel('Epochs')
-	plt.ylabel('Accuracy')
-	#plt.xticks([0, 19, 39, 59, 79, 99])
+	plt.xlabel('Runs')
+	plt.ylabel('Avg. Accuracy')
+	plt.xticks([0, 19, 39, 59, 79, 99])
 	plt.show()
 
 #xy_lineplot('./input/bs_ma.txt', 'Batch Size vs Model Accuracy')
 #xy_lineplot('./input/training.txt', 'Epochs Quantity vs Model Accuracy')
 #xy_lineplot('./input/bs_time.txt', 'Batch Size vs Time (min)')
-#xy_lineplot('./input/100trainings.txt', 'Epochs vs Avg. Accuracy')
-histogram(['./input/wordCount_merged.msgpack', './input/wordDict_merged.msgpack'], 'Histogram of Word Ocurrences')
+xy_lineplot('./input/100trainings.txt', 'Runs vs Avg. Accuracy')
+#histogram(['./input/wordCount_merged.msgpack', './input/wordDict_merged.msgpack'], 'Histogram of Word Ocurrences')
 #boxplot(['./input/100trainings.txt', './input/randomAccuracy.txt'], 'Neural Network vs Random Model')
