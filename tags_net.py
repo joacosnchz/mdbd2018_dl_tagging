@@ -18,15 +18,21 @@ from datetime import datetime
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
 BATCH_SIZE = int(sys.argv[1]) # amount of posts to take by time sys.argv
 HM_EPOCHS = int(sys.argv[2]) # how many epochs per training
-IS_TRAINING = bool(sys.argv[3]) # are we training or using the model?
+if sys.argv[3] == '1': # are we training or using the model?
+    IS_TRAINING = True 
+else:
+    IS_TRAINING = False
 N_CLASSES = int(sys.argv[4]) # how many neurons in the output layer
 TRAINING_INDEX = int(sys.argv[5])
 
 model = TagsModel(N_CLASSES)
 
-(train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
+if IS_TRAINING:
+    (train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
 
-long_training = len(train_x[0]) # 86
+    long_training = len(train_x[0]) # 50376
+else:
+    long_training = 50376
 
 x = tf.placeholder('float', [None, long_training], name='x')
 y = tf.placeholder('float', name='y')
@@ -113,9 +119,10 @@ def use_neural_network(input_data):
         
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
-        saver.restore(sess, './output/model_trains' + '_epochs_' + HM_EPOCHS + '_batch_' + BATCH_SIZE + '/model.ckpt')
+        saver.restore(sess, './output/model_trains_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
 
         features = tags_worddict.get_multihot(input_data)
+        
         result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
         
         print('Result', result[0])
@@ -123,12 +130,6 @@ def use_neural_network(input_data):
 if IS_TRAINING:
     train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
 else:
-    print('Coffee')
-    use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
-    use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
-
-    print('Vi')
-    use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
-    use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
-
+    use_neural_network('how would dividing interval training into multiple workouts actually affect fitness gains lets assume that the time spent in the training zones remains the same')
+    
 
