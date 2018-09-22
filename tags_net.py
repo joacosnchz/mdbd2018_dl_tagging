@@ -116,16 +116,36 @@ def use_neural_network(input_data):
         for word in lexicon_pre:
             lexicon.append(word.decode())
 
-        
+    probabilities = []
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         saver.restore(sess, './output/model_trains_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
 
         features = tags_worddict.get_multihot(input_data)
+
+        result = prediction.eval(feed_dict={x:[features]})
         
-        result = (sess.run(tf.argmax(prediction.eval(feed_dict={x:[features]}),1)))
-        
-        print('Result', result[0])
+        print(result[0])
+        totalsum = 0
+        for absval in result[0]:
+            totalsum += absval
+
+        for absval in result[0]:
+            probabilities.append(absval/totalsum)
+
+    sortedprob = np.argsort(probabilities)
+    print(sortedprob)
+    
+    with open('./input/forumKeys.msgpack', 'rb') as f:
+        keys = msgpack.unpack(f)
+
+        for i in range(len(sortedprob)-3, len(sortedprob)):
+            for key in keys:
+                if key[0] == sortedprob[i]:
+                    print("%s: %0.0f%s" % (key[1].decode('ascii'), 100*probabilities[sortedprob[i]], '%'))
+                    break
+            
+
 
 if IS_TRAINING:
     train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
