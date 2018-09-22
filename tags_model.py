@@ -26,4 +26,3 @@ class TagsModel:
         l1 = tf.nn.relu(l1) # f(x) = max(0, x)
 
         return l1
-
