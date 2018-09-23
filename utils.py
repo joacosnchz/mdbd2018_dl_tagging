@@ -42,22 +42,17 @@ def read_data(file_path):
 	posts = np.array(posts)
 	random.shuffle(posts)
 
-	#80% of data for training and 20% for testing
-	train_size = int(len(posts) * .8)
-	#train_posts = posts[:train_size]
+	#90% of data for training and 10% for testing
+	train_size = int(len(posts) * .9)
 
 	print('Splitting train data...')
 	x_train = np.array(posts[:train_size][:,0].tolist())
 	y_train = np.array(posts[:train_size][:,1].tolist())
 
-	#del train_posts
-
 	print('Splitting test data...')
-	#test_posts = posts[train_size:]
 	x_test = np.array(posts[train_size:][:,0].tolist())
 	y_test = np.array(posts[train_size:][:,1].tolist())
 
-	#del test_posts
 	del posts
 
 	return ((x_train,y_train),(x_test,y_test),indexes)
