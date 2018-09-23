@@ -37,9 +37,12 @@ def read_data(file_path):
 	for f in folders:
 		forumname = f.split('.')[0].title()
 		forumnamesplitted = forumname.split('/')
-		indexes.append(forumnamesplitted[len(forumnamesplitted)-1]) #Take forum's name
+		forumnamesplitted2 = forumnamesplitted[len(forumnamesplitted)-1].split('\\')
+		indexes.append(forumnamesplitted2[1]) #Take forum's name
 		with open(f + '/OneHot.msgpack', 'rb') as input:
 			posts +=  (msgpack.unpack(input))
+
+	print(indexes[0])
 
 	posts = np.array(posts)
 	random.shuffle(posts)
