@@ -108,6 +108,8 @@ def generate_confusion_matrix(test_x, test_y, plot=False):
     '''
     prediction = model.predict(x)
 
+    print('Generating confussion matrix...')
+
     with tf.Session() as sess:
         saver.restore(sess, './output/model_trains' + '_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
 

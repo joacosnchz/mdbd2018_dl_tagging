@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
+from matplotlib.colors import LinearSegmentedColormap
+
 def safe_mkdir(path):
     """ Create a directory if there isn't one already. """
     try:
@@ -37,9 +39,12 @@ def read_data(file_path):
 	for f in folders:
 		forumname = f.split('.')[0].title()
 		forumnamesplitted = forumname.split('/')
-		indexes.append(forumnamesplitted[len(forumnamesplitted)-1]) #Take forum's name
-		with open('/U' + f + '/OneHot.msgpack', 'rb') as input:
+		forumnamesplitted2 = forumnamesplitted[len(forumnamesplitted)-1].split('\\')
+		indexes.append(forumnamesplitted2[1]) #Take forum's name
+		with open(f + '/OneHot.msgpack', 'rb') as input:\
 			posts +=  (msgpack.unpack(input))
+
+	print(indexes[0])
 
 	posts = np.array(posts)
 	random.shuffle(posts)
@@ -65,8 +70,10 @@ def plot_confusion_matrix(df, save=False):
 	'''
 	plt.figure(figsize=(8,6))
 
+	cmap = LinearSegmentedColormap.from_list('mycmap', ['black', 'white'])
+
 	#generate heatmap axis and styles
-	ax = sns.heatmap(df, linewidths=.5)
+	ax = sns.heatmap(df, linewidths=.5, cmap=cmap)
 	plt.subplots_adjust(left=.20, bottom=.21,  top=.94)
 	ax.set_title("Confusion Matrix", fontsize='large')
 	ax.set_xticklabels(ax.get_xticklabels(),rotation=45,ha="right",rotation_mode='anchor')
