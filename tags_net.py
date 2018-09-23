@@ -14,6 +14,7 @@ import utils
 import msgpack
 import tags_worddict
 from datetime import datetime
+import pandas as pd
 
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
 BATCH_SIZE = int(sys.argv[1]) # amount of posts to take by time sys.argv
@@ -119,12 +120,13 @@ def generate_confusion_matrix(test_x, test_y, plot=False):
         onedim_testy = np.array(onedim_testy)
 
         heatmap_data = tf.confusion_matrix(labels=onedim_testy, predictions=pred)
+        heatmap_matrix = sess.run(heatmap_data)
 
-    #df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
+    df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
     print("Heatmap generated saccessfully")
 
     #Plot the matrix using seaborn 
-    #utils.plot_confusion_matrix(df, plot)
+    utils.plot_confusion_matrix(df, plot)
 
 if __name__ == '__main__':
     if IS_TRAINING:
