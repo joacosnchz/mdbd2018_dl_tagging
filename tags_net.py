@@ -107,6 +107,7 @@ def train_neural_network(x, hm_epochs, batch_size):
 
 
 def use_neural_network(input_data):
+    print('Input:', input_data)
     prediction = model.predict(x)
     lemmatizer = WordNetLemmatizer()
 
@@ -125,7 +126,6 @@ def use_neural_network(input_data):
 
         result = prediction.eval(feed_dict={x:[features]})
         
-        print(result[0])
         totalsum = 0
         for absval in result[0]:
             totalsum += absval
@@ -134,7 +134,6 @@ def use_neural_network(input_data):
             probabilities.append(absval/totalsum)
 
     sortedprob = np.argsort(probabilities)
-    print(sortedprob)
     
     with open('./input/forumKeys.msgpack', 'rb') as f:
         keys = msgpack.unpack(f)
@@ -145,7 +144,6 @@ def use_neural_network(input_data):
                     print("%s: %0.0f%s" % (key[1].decode('ascii'), 100*probabilities[sortedprob[i]], '%'))
                     break
             
-
 
 if IS_TRAINING:
     train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
