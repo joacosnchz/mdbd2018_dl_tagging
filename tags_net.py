@@ -121,6 +121,7 @@ def generate_confusion_matrix(test_x, test_y, plot=False):
 
         heatmap_data = tf.confusion_matrix(labels=onedim_testy, predictions=pred)
         heatmap_matrix = sess.run(heatmap_data)
+        print(heatmap_matrix)
 
     df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
     print("Heatmap generated saccessfully")
