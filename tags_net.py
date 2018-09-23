@@ -18,7 +18,10 @@ from datetime import datetime
 FILE_PATH = os.path.dirname(os.path.realpath(__file__)) # path where the input data is stored
 BATCH_SIZE = int(sys.argv[1]) # amount of posts to take by time sys.argv
 HM_EPOCHS = int(sys.argv[2]) # how many epochs per training
-IS_TRAINING = bool(sys.argv[3]) # are we training or using the model?
+if sys.argv[3] == '1': # are we training or using the model?
+    IS_TRAINING = True
+else:
+    IS_TRAINING = False 
 N_CLASSES = int(sys.argv[4]) # how many neurons in the output layer
 TRAINING_INDEX = int(sys.argv[5])
 
@@ -91,8 +94,6 @@ def train_neural_network(x, hm_epochs, batch_size):
         loss.close()
         trainings.close()
         
-
-
 def feed_forward(test_x):
     '''Takes vector representation of a text. Runs the model and returns the most accurate label or category.
     '''
@@ -101,38 +102,31 @@ def feed_forward(test_x):
     print("Data predicted saccessfully")
     return (result)
 
-
-def generate_confusion_matrix(pred, test_y, plot=False):
+def generate_confusion_matrix(test_x, test_y, plot=False):
     '''Generates the confusion matrix of the tested data
     '''
-    heatmap_data = tf.confusion_matrix(labels=test_y, predictions=pred)
+    print(test_y.shape)
+    prediction = model.predict(x)
 
-    sess = tf.Session()
-    with sess.as_default():
-        heatmap_matrix = sess.run(heatmap_data)
+    with tf.Session() as sess:
+        saver.restore(sess, './output/model_trains' + '_epochs_' + str(HM_EPOCHS) + '_batch_' + str(BATCH_SIZE) + '/model.ckpt')
 
-    df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
+        pred = (sess.run(tf.argmax(prediction.eval(feed_dict={x:test_x}),1)))
+
+        print(pred.shape)
+        print(pred[0].shape)
+
+        heatmap_data = tf.confusion_matrix(labels=np.array(test_y), predictions=np.array(pred))
+
+    #df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
     print("Heatmap generated saccessfully")
 
     #Plot the matrix using seaborn 
-    utils.plot_confusion_matrix(df, plot)
-
-
-
+    #utils.plot_confusion_matrix(df, plot)
 
 if __name__ == '__main__':
     if IS_TRAINING:
         train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
-        pred = feed_forward(test_x)
-        generate_confusion_matrix(pred, test_y, True)
-
-
     else:
-        print('Coffee')
-        utils.use_neural_network('we got two of these for our office one has specialties menu item the other does not the specialties menu item is mentioned in the user guide but not how to enable or disable it in the picture below it is the lower right grid item it is just blank missing from one machine')
-        utils.use_neural_network('i want to understand how i can make a better cup of coffee so i recently purchased a wilfa grinder however after reading the instruction manual it says that the blades and bean cup cannot be submerged in water only wiped clean this means that you are never really going to get it spotlessly clean like you can with a manual grinder')
-
-        print('Vi')
-        utils.use_neural_network('i am looking to lazily start up plug in when the user starts using vim this is to save resources when user may start up lots of vims and then not interact with it')  
-        utils.use_neural_network('the problem is that i cant do anything inside vim until i close the powershell window which somehow defeats the purpose how can i tell vim to let go of the opened powershell so i could make changes in the file open in vim')
+        generate_confusion_matrix(test_x, test_y, True)
 
