@@ -29,7 +29,7 @@ model = TagsModel(N_CLASSES)
 
 (train_x, train_y), (test_x, test_y), indexes = utils.read_data(FILE_PATH)
 
-long_training = len(train_x[0]) # 86
+long_training = len(train_x[0]) 
 
 x = tf.placeholder('float', [None, long_training], name='x')
 y = tf.placeholder('float', name='y')
@@ -105,7 +105,6 @@ def feed_forward(test_x):
 def generate_confusion_matrix(test_x, test_y, plot=False):
     '''Generates the confusion matrix of the tested data
     '''
-    print(test_y.shape)
     prediction = model.predict(x)
 
     with tf.Session() as sess:
@@ -113,10 +112,13 @@ def generate_confusion_matrix(test_x, test_y, plot=False):
 
         pred = (sess.run(tf.argmax(prediction.eval(feed_dict={x:test_x}),1)))
 
-        print(pred.shape)
-        print(pred[0].shape)
+        onedim_testy = []
+        for _y in test_y:
+            onedim_testy.append(sess.run(tf.argmax(_y)))
 
-        heatmap_data = tf.confusion_matrix(labels=np.array(test_y), predictions=np.array(pred))
+        onedim_testy = np.array(onedim_testy)
+
+        heatmap_data = tf.confusion_matrix(labels=onedim_testy, predictions=pred)
 
     #df = pd.DataFrame(heatmap_matrix, index=indexes, columns=indexes)
     print("Heatmap generated saccessfully")

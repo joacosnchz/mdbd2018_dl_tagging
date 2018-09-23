@@ -36,7 +36,7 @@ def read_data(file_path):
 
 	for f in folders:
 		indexes.append(f.split('.')[0].title()) #Take forum's name
-		with open(f + '/OneHot.msgpack', 'rb') as input:
+		with open('/U' + f + '/OneHot.msgpack', 'rb') as input:
 			posts +=  (msgpack.unpack(input))
 
 	posts = np.array(posts)
