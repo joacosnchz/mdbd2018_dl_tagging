@@ -30,9 +30,10 @@ model = TagsModel(N_CLASSES)
 if IS_TRAINING:
     (train_x, train_y), (test_x, test_y) = utils.read_data(FILE_PATH)
 
-    long_training = len(train_x[0]) # 50376
+    long_training = len(train_x[0]) # 50376 
 else:
     long_training = 50376
+    #long_training = 50540
 
 x = tf.placeholder('float', [None, long_training], name='x')
 y = tf.placeholder('float', name='y')
@@ -107,7 +108,7 @@ def train_neural_network(x, hm_epochs, batch_size):
 
 
 def use_neural_network(input_data):
-    print('Input:', input_data)
+    #print('Input:', input_data)
     prediction = model.predict(x)
     lemmatizer = WordNetLemmatizer()
 
@@ -132,7 +133,7 @@ def use_neural_network(input_data):
 
         for absval in result[0]:
             probabilities.append(absval/totalsum)
-
+    
     sortedprob = np.argsort(probabilities)
     
     with open('./input/forumKeys.msgpack', 'rb') as f:
@@ -148,6 +149,10 @@ def use_neural_network(input_data):
 if IS_TRAINING:
     train_neural_network(x, HM_EPOCHS, BATCH_SIZE)
 else:
-    use_neural_network('how would dividing interval training into multiple workouts actually affect fitness gains lets assume that the time spent in the training zones remains the same')
+    # Example 1: how would dividing interval training into multiple workouts actually affect fitness gains lets assume that the time spent in the training zones remains the same
+    # Example 2: during the times we let the kittens in the house and they are so frantic there is still food in the bowls we put outside and they are clearly willing to eat that kind of food inside its the same food they are so defensive about i know that at least one of the kittens has eaten from those bowls before i do not know how much they have been eating from it recently
+    # Example 3: i have been stuck around the 2000 rating mark on various different online chess websites for a few years now i seem to have hit a wall i am quite busy so when i do find time for chess i tend to just play some blitz for enjoyment but I suspect that is what is stalling my game i have decided to spend more time studying than playing in order to finally progress further
+    input_sentence = input('Insert sentence: ')
+    use_neural_network(input_sentence)
     
 
